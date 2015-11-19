@@ -23,6 +23,10 @@ int main (int argc, char* args[]) {
 		return 0;
 	}
 
+	//set up player in world space
+	translate();
+
+	struct vector2d thrust = {0, -.05};
 	int sleep = 0;
 	int quit = 0;
 	SDL_Event event;
@@ -43,9 +47,16 @@ int main (int argc, char* args[]) {
 						case SDLK_ESCAPE:
 						
 							quit = 1;
+							
 							break;
 						
-							default:
+						case SDLK_UP:
+							
+							apply_force(thrust);
+							
+							break;
+						
+						default:
 							break;
 					}
 
