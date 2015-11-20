@@ -1,7 +1,6 @@
 
 //player.c
 
-#include <math.h>
 #include <stdio.h>
 #include "renderer.h"
 #include "vector.h"
@@ -32,6 +31,14 @@ void apply_force(struct vector2d v) {
 	add_vector(&velocity, &v);
 }
 
+struct vector2d get_direction() {
+
+	struct vector2d direction = obj_vert[0];
+	normalise_vector(&direction);
+
+	return direction;
+}
+
 void draw_player(uint32_t* pixel_buffer) {
 	
 	int i = 0;
@@ -52,11 +59,18 @@ void draw_player(uint32_t* pixel_buffer) {
 
 		draw_pixel(pixel_buffer, world_vert[i].x, world_vert[i].y, 0xffffffff);	
 	}
+		
+		struct vector2d cpy = {location.x, location.y};
+		struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+		add_vector(&cpy, &translation);
 
+
+		draw_pixel(pixel_buffer, cpy.x, cpy.y, 0xff00ffff);	
 }
 
 void move_player() {
 	
+	limit_vector(&velocity, 4.5);
 	add_vector(&location, &velocity);
 	
 	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
@@ -70,11 +84,37 @@ void move_player() {
 	}
 }
 
+void rotate_player(float degrees) {
+	
+	int i = 0;
+
+	for (i =0; i < VERTS; i++) {
+	
+		rotate_vector(&obj_vert[i], degrees);
+	}
+
+}
+
 void bounds_player() {
 	
+	if (location.x < -SCREEN_WIDTH / 2) {
+		
+		location.x = SCREEN_WIDTH / 2;
+	}
+	
+	if (location.x > SCREEN_WIDTH / 2) {
+		
+		location.x = -SCREEN_WIDTH / 2;
+	}
+
 	if (location.y < -SCREEN_HEIGHT / 2) {
 		
 		location.y = SCREEN_HEIGHT / 2;
+	}
+	
+	if (location.y > SCREEN_HEIGHT / 2) {
+		
+		location.y = -SCREEN_HEIGHT / 2;
 	}
 }
 

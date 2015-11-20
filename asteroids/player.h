@@ -13,3 +13,7 @@ void translate();
 
 void apply_force(struct vector2d v);
 
+void rotate_player(float degrees);
+
+struct vector2d get_direction();
+

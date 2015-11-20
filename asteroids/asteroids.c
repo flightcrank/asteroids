@@ -45,8 +45,19 @@ int main (int argc, char* args[]) {
 			
 		if (state[SDL_SCANCODE_UP]) {
 
-			struct vector2d thrust = {0, -.05};
+			struct vector2d thrust = get_direction();
+			multiply_vector(&thrust, .2);
 			apply_force(thrust);
+		}
+		
+		if (state[SDL_SCANCODE_LEFT]) {
+			
+			rotate_player(-5);
+		}
+
+		if (state[SDL_SCANCODE_RIGHT]) {
+			
+			rotate_player(5);
 		}
 
 		//draw to the pixel buffer
