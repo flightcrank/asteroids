@@ -26,42 +26,27 @@ int main (int argc, char* args[]) {
 	//set up player in world space
 	translate();
 
-	struct vector2d thrust = {0, -.05};
 	int sleep = 0;
 	int quit = 0;
-	SDL_Event event;
 	Uint32 next_game_tick = SDL_GetTicks();
 	
 	//render loop
 	while(quit == 0) {
-	
-		while (SDL_PollEvent(&event)) {
+		
+		//check for new events every frame
+		SDL_PumpEvents();
 
-			switch(event.type) {
-					
-				case SDL_KEYDOWN:
-					
-					switch( event.key.keysym.sym ) {
-					
-						//exit out of game loop if escape is pressed
-						case SDLK_ESCAPE:
-						
-							quit = 1;
-							
-							break;
-						
-						case SDLK_UP:
-							
-							apply_force(thrust);
-							
-							break;
-						
-						default:
-							break;
-					}
+		const Uint8 *state = SDL_GetKeyboardState(NULL);
+		
+		if (state[SDL_SCANCODE_ESCAPE]) {
+		
+			quit = 1;
+		}
+			
+		if (state[SDL_SCANCODE_UP]) {
 
-					break;
-			}
+			struct vector2d thrust = {0, -.05};
+			apply_force(thrust);
 		}
 
 		//draw to the pixel buffer
