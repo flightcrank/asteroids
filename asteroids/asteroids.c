@@ -24,10 +24,11 @@ int main (int argc, char* args[]) {
 	}
 
 	//set up player in world space
-	translate();
+	init_player();
 
 	int sleep = 0;
 	int quit = 0;
+	SDL_Event event;
 	Uint32 next_game_tick = SDL_GetTicks();
 	
 	//render loop
@@ -59,11 +60,29 @@ int main (int argc, char* args[]) {
 			
 			rotate_player(5);
 		}
+		
+
+		while (SDL_PollEvent(&event)) {
+		
+			switch(event.type) {
+					
+				case SDL_KEYDOWN:
+					
+					switch( event.key.keysym.sym ) {
+					
+						case SDLK_SPACE:
+						
+							shoot_bullet();
+						break; 
+					}
+				break;
+			}
+		}
 
 		//draw to the pixel buffer
 		clear_pixels(pixels, 0x00000000);
 		draw_player(pixels);
-		move_player();
+		update_player();
 		bounds_player();
 		
 		//draw buffer to the texture representing the screen

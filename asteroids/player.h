@@ -3,13 +3,24 @@
 
 #include "vector.h"
 
+enum boolean {TRUE, FALSE};
+
+struct bullet {
+	
+	struct vector2d location;
+	struct vector2d velocity;
+	enum boolean alive;
+};
+
+void init_player();
+
 void draw_player(uint32_t* pixel_buffer);
 
-void move_player();
+void shoot_bullet();
+
+void update_player();
 
 void bounds_player();
-
-void translate();
 
 void apply_force(struct vector2d v);
 

@@ -24,3 +24,4 @@ float magnitude_vector(struct vector2d* v);
 void normalise_vector(struct vector2d* v);
 
 void limit_vector(struct vector2d* v, float limit);
+
