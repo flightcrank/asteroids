@@ -47,20 +47,19 @@ int main (int argc, char* args[]) {
 		if (state[SDL_SCANCODE_UP]) {
 
 			struct vector2d thrust = get_direction();
-			multiply_vector(&thrust, .2);
+			multiply_vector(&thrust, .055);
 			apply_force(thrust);
 		}
 		
 		if (state[SDL_SCANCODE_LEFT]) {
 			
-			rotate_player(-5);
+			rotate_player(-4);
 		}
 
 		if (state[SDL_SCANCODE_RIGHT]) {
 			
-			rotate_player(5);
+			rotate_player(4);
 		}
-		
 
 		while (SDL_PollEvent(&event)) {
 		
@@ -73,15 +72,15 @@ int main (int argc, char* args[]) {
 						case SDLK_SPACE:
 						
 							shoot_bullet();
-						break; 
+							break; 
 					}
-				break;
 			}
 		}
 
 		//draw to the pixel buffer
 		clear_pixels(pixels, 0x00000000);
 		draw_player(pixels);
+		draw_line(pixels, 1, 6, 3, 1, 0xffffffff);
 		update_player();
 		bounds_player();
 		
@@ -94,7 +93,7 @@ int main (int argc, char* args[]) {
 		SDL_RenderPresent(renderer);
 				
 		//time it takes to render 1 frame in milliseconds
-		next_game_tick += 1000 / 30;
+		next_game_tick += 1000 / 60;
 		sleep = next_game_tick - SDL_GetTicks();
 	
 		if( sleep >= 0 ) {

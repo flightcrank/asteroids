@@ -58,7 +58,7 @@ void shoot_bullet() {
 			bullets[i].alive = TRUE;
 			bullets[i].location = world_vert[0];
 			bullets[i].velocity = get_direction();
-			multiply_vector(&bullets[i].velocity, 6.6);
+			multiply_vector(&bullets[i].velocity, 4.4);
 			break;
 		}
 	}
@@ -67,13 +67,15 @@ void shoot_bullet() {
 void draw_player(uint32_t* pixel_buffer) {
 	
 	int i = 0;
-	
+
+	draw_line(pixel_buffer, world_vert[0].x, world_vert[0].y, world_vert[1].x, world_vert[1].y, 0xffffffff);
+
 	//draw vers representing the player
 	for (i = 0; i < VERTS; i++) {
 	
-		draw_pixel(pixel_buffer, world_vert[i].x, world_vert[i].y, 0xffffffff);	
+		draw_pixel(pixel_buffer, world_vert[i].x, world_vert[i].y, 0xff00ffff);	
 	}
-		
+
 	//draw verts representing the bullets
 	for (i = 0; i < BULLETS; i++) {
 
@@ -88,12 +90,12 @@ void draw_player(uint32_t* pixel_buffer) {
 	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
 	add_vector(&cpy, &translation);
 
-	draw_pixel(pixel_buffer, cpy.x, cpy.y, 0xff00ffff);	
+	draw_pixel(pixel_buffer, cpy.x, cpy.y, 0x00ff00ff);	
 }
 
 void update_player() {
 	
-	limit_vector(&velocity, 4.5);
+	limit_vector(&velocity, 2.5);
 	add_vector(&location, &velocity);
 	
 	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
