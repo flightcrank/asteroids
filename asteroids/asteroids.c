@@ -80,7 +80,7 @@ int main (int argc, char* args[]) {
 		//draw to the pixel buffer
 		clear_pixels(pixels, 0x00000000);
 		draw_player(pixels);
-		draw_line(pixels, 1, 6, 3, 1, 0xffffffff);
+		//draw_line(pixels, 1, 1, 8, 1, 0xffffffff);
 		update_player();
 		bounds_player();
 		

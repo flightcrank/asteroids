@@ -11,6 +11,19 @@ int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t c
 	//plot the first point
 	draw_pixel(pixel_buffer, x1, y1, colour);
 
+	//make we draw the line always from left to right
+	if (x1 > x2) {
+
+		int temp_x = x1;
+		int temp_y = y1;
+
+		x1 = x2;
+		y1 = y2;
+
+		x2 = temp_x;
+		y2 = temp_y;
+	}
+	
 	int dx = x2 - x1;
 	int dy = y2 - y1;
 
@@ -20,7 +33,7 @@ int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t c
 		float slope = (float) dy / dx;
 	
 		//line travels from top to bottom
-		if (slope >= 0) {
+		if (y1 <= y2) {
 
 			float ideal_y = y1 + slope;
 			int y = (int) round(ideal_y);
@@ -46,15 +59,15 @@ int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t c
 		}
 		
 		//line travels from bottom to top
-		if (slope < 0) {
-	
+		if (y1 > y2) {
+			
 			float ideal_y = y1 + slope;
 			int y = (int) round(ideal_y);
 			float error = ideal_y - y;
 
 			int i = 0;
 			
-			//loop through all the X values
+			//loop through all the x values
 			for(i = 1; i <= dx; i++) {
 				
 				int x = x1 + i;
@@ -70,15 +83,17 @@ int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t c
 				}
 			}
 		}
+
+
 	}
-	
-	//length of line is greater along the Y axis
+
+	//the length of the line is greater along the Y axis
 	if (fabs(dy) > dx) {
-	
+		
 		float slope = (float) dx / dy;
 		
 		//line travels from top to bottom
-		if (slope >= 0) {
+		if (y1 < y2) {
 			
 			float ideal_x = x1 + slope;
 			int x = (int) round(ideal_x);
@@ -100,13 +115,13 @@ int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t c
 					x++;
 					error -= 1;
 				}
-			}	
+			}
 		}
-
-		//line travels from bottom to top
-		if (slope < 0) {
 		
-			float ideal_x = x1 + fabs(slope);
+		//draw line from bottom to top
+		if (y1 > y2) {
+			
+			float ideal_x = x1 - slope;
 			int x = (int) round(ideal_x);
 			float error = ideal_x - x;
 
@@ -119,14 +134,14 @@ int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t c
 				
 				draw_pixel(pixel_buffer, x, y, colour);
 				
-				error += fabs(slope);
+				error += slope;
 
-				if (error  >= 0.5) {
+				if (error  <= -0.5) {
 				
 					x++;
-					error -= 1;
+					error += 1;
 				}
-			}	
+			}
 		}
 	}
 

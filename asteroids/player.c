@@ -69,6 +69,8 @@ void draw_player(uint32_t* pixel_buffer) {
 	int i = 0;
 
 	draw_line(pixel_buffer, world_vert[0].x, world_vert[0].y, world_vert[1].x, world_vert[1].y, 0xffffffff);
+	draw_line(pixel_buffer, world_vert[1].x, world_vert[1].y, world_vert[2].x, world_vert[2].y, 0xffffffff);
+	draw_line(pixel_buffer, world_vert[2].x, world_vert[2].y, world_vert[0].x, world_vert[0].y, 0xffffffff);
 
 	//draw vers representing the player
 	for (i = 0; i < VERTS; i++) {
