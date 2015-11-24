@@ -47,7 +47,7 @@ int main (int argc, char* args[]) {
 		if (state[SDL_SCANCODE_UP]) {
 
 			struct vector2d thrust = get_direction();
-			multiply_vector(&thrust, .055);
+			multiply_vector(&thrust, .06);
 			apply_force(thrust);
 		}
 		
@@ -80,7 +80,7 @@ int main (int argc, char* args[]) {
 		//draw to the pixel buffer
 		clear_pixels(pixels, 0x00000000);
 		draw_player(pixels);
-		//draw_line(pixels, 1, 1, 8, 1, 0xffffffff);
+		draw_line(pixels, 1, 6, 6, 1, 0xffffffff);
 		update_player();
 		bounds_player();
 		

@@ -23,7 +23,7 @@ void init_player() {
 	for(i = 0; i < VERTS; i++) {
 
 		multiply_vector(&obj_vert[i], -1);
-		multiply_vector(&obj_vert[i], 10);
+		multiply_vector(&obj_vert[i], 10.5);
 		add_vector(&world_vert[i], &obj_vert[i]);
 		add_vector(&world_vert[i], &translation);
 	}
@@ -75,7 +75,7 @@ void draw_player(uint32_t* pixel_buffer) {
 	//draw vers representing the player
 	for (i = 0; i < VERTS; i++) {
 	
-		draw_pixel(pixel_buffer, world_vert[i].x, world_vert[i].y, 0xff00ffff);	
+		//draw_pixel(pixel_buffer, world_vert[i].x, world_vert[i].y, 0xff00ffff);	
 	}
 
 	//draw verts representing the bullets

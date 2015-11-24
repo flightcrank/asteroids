@@ -28,7 +28,7 @@ int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t c
 	int dy = y2 - y1;
 
 	//the length of the line is greater along the X axis
-	if (dx > fabs(dy)) {
+	if (dx >= fabs(dy)) {
 		
 		float slope = (float) dy / dx;
 	
