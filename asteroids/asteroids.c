@@ -1,160 +1,158 @@
 
 //asteroids.c
 
-//Using SDL and standard IO
-#include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "renderer.h"
-#include "player.h"
+#include "asteroids.h"
 
-int init(int width, int height);
+#define ASTEROIDS 3
 
-SDL_Window* window = NULL;	//The window we'll be rendering to
-SDL_Renderer *renderer;		//The renderer SDL will use to draw to the screen
-SDL_Texture *screen;		//The texture representing the screen	
-uint32_t* pixels = NULL;	//The pixel buffer to draw to
-    
-int main (int argc, char* args[]) {
+struct asteroid asteroids[ASTEROIDS];
 
-	//SDL Window setup
-	if (init(SCREEN_WIDTH, SCREEN_HEIGHT) == 1) {
-		
-		return 0;
-	}
-
-	//set up player in world space
-	init_player();
-
-	int sleep = 0;
-	int quit = 0;
-	SDL_Event event;
-	Uint32 next_game_tick = SDL_GetTicks();
+void init_asteroids() {
 	
-	//render loop
-	while(quit == 0) {
+	int i = 0;
+	int j = 0;
+	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+	
+	for (i = 0; i < ASTEROIDS; i++) {
+	
+		int sign_x = rand() % 100;
+		int sign_y = rand() % 100;
 		
-		//check for new events every frame
-		SDL_PumpEvents();
+		int lx = rand() % SCREEN_WIDTH / 2;
+		int ly = rand() % SCREEN_HEIGHT / 2;
 
-		const Uint8 *state = SDL_GetKeyboardState(NULL);
+		float vx = (float) (rand() % 500) / 1000;
+		float vy = (float) (rand() % 500) / 1000;
 		
-		if (state[SDL_SCANCODE_ESCAPE]) {
+		float degrees =  (float) (rand() % 100 + 100) / 1000;	
 		
-			quit = 1;
-		}
+		if (sign_x >= 50) {
 			
-		if (state[SDL_SCANCODE_UP]) {
-
-			struct vector2d thrust = get_direction();
-			multiply_vector(&thrust, .06);
-			apply_force(thrust);
+			vx = -vx;
+			lx = -lx;
+			degrees = -degrees;
 		}
 		
-		if (state[SDL_SCANCODE_LEFT]) {
+		if (sign_y >= 50) {
 			
-			rotate_player(-4);
+			vy = -vy;
+			ly = -ly;
 		}
 
-		if (state[SDL_SCANCODE_RIGHT]) {
+		printf("\nlx = %d ly = %d rotation = %f\n", lx, ly, degrees);
+
+		asteroids[i].rotation = degrees;
+		asteroids[i].location.x = lx;
+		asteroids[i].location.y = ly;
+		asteroids[i].velocity.x = vx;
+		asteroids[i].velocity.y = vy;
+		asteroids[i].obj_vert[0].x = .0;
+		asteroids[i].obj_vert[0].y = .4;
+		asteroids[i].obj_vert[1].x = .2;
+		asteroids[i].obj_vert[1].y = .3;
+		asteroids[i].obj_vert[2].x = .2;
+		asteroids[i].obj_vert[2].y = .1;
+		asteroids[i].obj_vert[3].x = .4;
+		asteroids[i].obj_vert[3].y = .0;
+		asteroids[i].obj_vert[4].x = .3;
+		asteroids[i].obj_vert[4].y = -.2;
+		asteroids[i].obj_vert[5].x = .1;
+		asteroids[i].obj_vert[5].y = -.2;
+		asteroids[i].obj_vert[6].x = .0;
+		asteroids[i].obj_vert[6].y = -.3;
+		asteroids[i].obj_vert[7].x = -.2;
+		asteroids[i].obj_vert[7].y = -.2;
+		asteroids[i].obj_vert[8].x = -.4;
+		asteroids[i].obj_vert[8].y = 0;
+		asteroids[i].obj_vert[9].x = -.3;
+		asteroids[i].obj_vert[9].y = .3;
+		
+		for (j = 0; j < VERTS; j++) {
 			
-			rotate_player(4);
+			//coverts verts from obj space to world space and traslate world space to screen space
+			multiply_vector(&asteroids[i].obj_vert[j], 88);
+			add_vector(&asteroids[i].world_vert[j], &asteroids[i].obj_vert[j]);
+			add_vector(&asteroids[i].world_vert[j], &translation);
 		}
+	}
+}
 
-		while (SDL_PollEvent(&event)) {
+void update_asteroids() {
+
+	int i = 0; 
+	int j = 0; 
+	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+	
+	for (i = 0; i < ASTEROIDS; i++) {
 		
-			switch(event.type) {
-					
-				case SDL_KEYDOWN:
-					
-					switch( event.key.keysym.sym ) {
-					
-						case SDLK_SPACE:
-						
-							shoot_bullet();
-							break; 
-					}
-			}
-		}
-
-		//draw to the pixel buffer
-		clear_pixels(pixels, 0x00000000);
-		draw_player(pixels);
-		draw_line(pixels, 1, 6, 6, 1, 0xffffffff);
-		update_player();
-		bounds_player();
+		//updates each asteroids location based off its velicity vector
+		add_vector(&asteroids[i].location, &asteroids[i].velocity);
 		
-		//draw buffer to the texture representing the screen
-		SDL_UpdateTexture(screen, NULL, pixels, SCREEN_WIDTH * sizeof (Uint32));
-
-		//draw to the screen
-		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, screen, NULL, NULL);
-		SDL_RenderPresent(renderer);
+		//update each vert of the asteroid to reflect the changes made to the asteroids location vector
+		//and rotation amount, then translate the new vert location to screen space
+		for (j = 0; j < VERTS; j++) {
 				
-		//time it takes to render 1 frame in milliseconds
-		next_game_tick += 1000 / 60;
-		sleep = next_game_tick - SDL_GetTicks();
-	
-		if( sleep >= 0 ) {
-            				
-			SDL_Delay(sleep);
+			asteroids[i].world_vert[j] = add_vector_new(&asteroids[i].obj_vert[j], &asteroids[i].location);
+			rotate_vector(&asteroids[i].obj_vert[j], asteroids[i].rotation);
+			add_vector(&asteroids[i].world_vert[j], &translation);
 		}
 	}
-
-	//free the screen buffer
-	free(pixels);
-	
-	//Destroy window 
-	SDL_DestroyWindow(window);
-
-	//Quit SDL subsystems 
-	SDL_Quit(); 
-	 
-	return 0;
 }
 
-int init(int width, int height) {
+void draw_asteroids(uint32_t* pixel_buffer) {
 
-	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	int i = 0;
 
-		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-		
-		return 1;
-	} 
+	for (i = 0; i < ASTEROIDS; i++) {
 	
-	//Create window	
-	SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN, &window, &renderer);
-	
-	//set up screen texture
-	screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
-	
-	//allocate pixel buffer
-	pixels = (Uint32*) malloc((SCREEN_WIDTH * SCREEN_HEIGHT) * sizeof(Uint32));
+		draw_line(pixel_buffer, asteroids[i].world_vert[0].x, asteroids[i].world_vert[0].y, asteroids[i].world_vert[1].x, asteroids[i].world_vert[1].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[1].x, asteroids[i].world_vert[1].y, asteroids[i].world_vert[2].x, asteroids[i].world_vert[2].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[2].x, asteroids[i].world_vert[2].y, asteroids[i].world_vert[3].x, asteroids[i].world_vert[3].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[3].x, asteroids[i].world_vert[3].y, asteroids[i].world_vert[4].x, asteroids[i].world_vert[4].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[4].x, asteroids[i].world_vert[4].y, asteroids[i].world_vert[5].x, asteroids[i].world_vert[5].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[5].x, asteroids[i].world_vert[5].y, asteroids[i].world_vert[6].x, asteroids[i].world_vert[6].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[6].x, asteroids[i].world_vert[6].y, asteroids[i].world_vert[7].x, asteroids[i].world_vert[7].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[7].x, asteroids[i].world_vert[7].y, asteroids[i].world_vert[8].x, asteroids[i].world_vert[8].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[8].x, asteroids[i].world_vert[8].y, asteroids[i].world_vert[9].x, asteroids[i].world_vert[9].y, 0xffffffff);
+		draw_line(pixel_buffer, asteroids[i].world_vert[9].x, asteroids[i].world_vert[9].y, asteroids[i].world_vert[0].x, asteroids[i].world_vert[0].y, 0xffffffff);
 
+		//draw vert representing ships location
+		struct vector2d cpy = {asteroids[i].location.x, asteroids[i].location.y};
+		struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
+		add_vector(&cpy, &translation);
 
-	if (window == NULL) { 
-		
-		printf ("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-		
-		return 1;
+		draw_pixel(pixel_buffer, cpy.x, cpy.y, 0x00ff00ff);
 	}
-
-	if (screen == NULL) { 
-		
-		printf ("Texture could not be created! SDL_Error: %s\n", SDL_GetError());
-		
-		return 1;
-	}
-	
-	if (pixels == NULL) {
-	
-		printf ("Error allocating pixel buffer");
-		
-		return 1;
-	}
-
-	return 0;
 }
 
+
+void bounds_asteroids() {
+
+	int i = 0;
+
+	for (i = 0 ; i < ASTEROIDS; i++) {
+		
+		if (asteroids[i].location.x < -SCREEN_WIDTH / 2) {
+			
+			asteroids[i].location.x = SCREEN_WIDTH / 2;
+		}
+	
+		if (asteroids[i].location.x > SCREEN_WIDTH / 2) {
+			
+			asteroids[i].location.x = -SCREEN_WIDTH / 2;
+		}
+		
+		if (asteroids[i].location.y < -SCREEN_HEIGHT / 2) {
+			
+			asteroids[i].location.y = SCREEN_HEIGHT / 2;
+		}
+	
+		if (asteroids[i].location.y > SCREEN_HEIGHT / 2) {
+			
+			asteroids[i].location.y = -SCREEN_HEIGHT / 2;
+		}
+	}
+}

@@ -1,6 +1,9 @@
 
 //vector.h
 
+#ifndef VECTOR_H
+#define VECTOR_H
+
 struct vector2d {
 	
 	float x;
@@ -25,3 +28,4 @@ void normalise_vector(struct vector2d* v);
 
 void limit_vector(struct vector2d* v, float limit);
 
+#endif //VECTOR_H

@@ -23,7 +23,7 @@ void init_player() {
 	for(i = 0; i < VERTS; i++) {
 
 		multiply_vector(&obj_vert[i], -1);
-		multiply_vector(&obj_vert[i], 10.5);
+		multiply_vector(&obj_vert[i], 12);
 		add_vector(&world_vert[i], &obj_vert[i]);
 		add_vector(&world_vert[i], &translation);
 	}
@@ -97,7 +97,7 @@ void draw_player(uint32_t* pixel_buffer) {
 
 void update_player() {
 	
-	limit_vector(&velocity, 2.5);
+	limit_vector(&velocity, 2);
 	add_vector(&location, &velocity);
 	
 	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};

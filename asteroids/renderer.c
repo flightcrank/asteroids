@@ -1,8 +1,6 @@
 
 //renderer.c
 
-#include <stdint.h>
-#include <stdio.h>
 #include "renderer.h"
 
 int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t colour) {
@@ -11,7 +9,7 @@ int draw_line(uint32_t* pixel_buffer, int x1, int y1, int x2, int y2, uint32_t c
 	//plot the first point
 	draw_pixel(pixel_buffer, x1, y1, colour);
 
-	//make we draw the line always from left to right
+	//make sure we draw the line always from left to right
 	if (x1 > x2) {
 
 		int temp_x = x1;
