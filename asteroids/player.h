@@ -3,6 +3,9 @@
 
 #include "vector.h"
 
+#define P_VERTS 3
+#define BULLETS 3
+	
 enum boolean {TRUE, FALSE};
 
 struct bullet {
@@ -12,19 +15,29 @@ struct bullet {
 	enum boolean alive;
 };
 
-void init_player();
+struct player {
 
-void draw_player(uint32_t* pixel_buffer);
+	float hit_radius;
+	struct vector2d location;
+	struct vector2d velocity;
+	struct vector2d obj_vert[P_VERTS];
+	struct vector2d world_vert[P_VERTS];
+	struct bullet bullets[BULLETS];
+};
 
-void shoot_bullet();
+void init_player(struct player* p);
 
-void update_player();
+void draw_player(uint32_t* pixel_buffer, struct player* p);
 
-void bounds_player();
+void shoot_bullet(struct player* p);
 
-void apply_force(struct vector2d v);
+void update_player(struct player* p);
 
-void rotate_player(float degrees);
+void bounds_player(struct player* p);
 
-struct vector2d get_direction();
+void apply_force(struct vector2d* velocity, struct vector2d v);
+
+void rotate_player(struct player* p, float degrees);
+
+struct vector2d get_direction(struct player* p);
 

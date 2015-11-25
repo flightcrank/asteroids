@@ -9,12 +9,16 @@
 #include "player.h"
 #include "asteroids.h"
 
+#define ASTEROIDS 3
+
 int init(int width, int height);
 
-SDL_Window* window = NULL;	//The window we'll be rendering to
-SDL_Renderer *renderer;		//The renderer SDL will use to draw to the screen
-SDL_Texture *screen;		//The texture representing the screen	
-uint32_t* pixels = NULL;	//The pixel buffer to draw to
+SDL_Window* window = NULL;			//The window we'll be rendering to
+SDL_Renderer *renderer;				//The renderer SDL will use to draw to the screen
+SDL_Texture *screen;				//The texture representing the screen	
+uint32_t* pixels = NULL;			//The pixel buffer to draw to
+struct asteroid asteroids[ASTEROIDS];		//The asteroids
+struct player p;				//The player
     
 int main (int argc, char* args[]) {
 
@@ -25,8 +29,8 @@ int main (int argc, char* args[]) {
 	}
 
 	//set up player in world space
-	init_player();
-	init_asteroids();
+	init_player(&p);
+	init_asteroids(asteroids, ASTEROIDS);
 
 	int sleep = 0;
 	int quit = 0;
@@ -48,19 +52,19 @@ int main (int argc, char* args[]) {
 			
 		if (state[SDL_SCANCODE_UP]) {
 
-			struct vector2d thrust = get_direction();
+			struct vector2d thrust = get_direction(&p);
 			multiply_vector(&thrust, .06);
-			apply_force(thrust);
+			apply_force(&p.velocity, thrust);
 		}
 		
 		if (state[SDL_SCANCODE_LEFT]) {
 			
-			rotate_player(-4);
+			rotate_player(&p, -4);
 		}
 
 		if (state[SDL_SCANCODE_RIGHT]) {
 			
-			rotate_player(4);
+			rotate_player(&p, 4);
 		}
 
 		while (SDL_PollEvent(&event)) {
@@ -73,7 +77,7 @@ int main (int argc, char* args[]) {
 					
 						case SDLK_SPACE:
 						
-							shoot_bullet();
+							shoot_bullet(&p);
 							break; 
 					}
 			}
@@ -81,12 +85,12 @@ int main (int argc, char* args[]) {
 
 		//draw to the pixel buffer
 		clear_pixels(pixels, 0x00000000);
-		draw_player(pixels);
-		draw_asteroids(pixels);
-		update_player();
-		update_asteroids();
-		bounds_player();
-		bounds_asteroids();
+		draw_player(pixels, &p);
+		draw_asteroids(pixels, asteroids, ASTEROIDS);
+		update_player(&p);
+		update_asteroids(asteroids, ASTEROIDS);
+		bounds_player(&p);
+		bounds_asteroids(asteroids, ASTEROIDS);
 		
 		//draw buffer to the texture representing the screen
 		SDL_UpdateTexture(screen, NULL, pixels, SCREEN_WIDTH * sizeof (Uint32));

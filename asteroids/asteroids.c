@@ -3,32 +3,32 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "renderer.h"
 #include "asteroids.h"
 
-#define ASTEROIDS 3
-
-struct asteroid asteroids[ASTEROIDS];
-
-void init_asteroids() {
+void init_asteroids(struct asteroid asteroids[], int size) {
 	
 	int i = 0;
 	int j = 0;
 	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
 	
-	for (i = 0; i < ASTEROIDS; i++) {
-	
+	for (i = 0; i < size; i++) {
+		
 		int sign_x = rand() % 100;
 		int sign_y = rand() % 100;
 		
+		//start asteroid in random location
 		int lx = rand() % SCREEN_WIDTH / 2;
 		int ly = rand() % SCREEN_HEIGHT / 2;
-
+	
+		//give asteroid random velocity
 		float vx = (float) (rand() % 500) / 1000;
 		float vy = (float) (rand() % 500) / 1000;
 		
-		float degrees =  (float) (rand() % 100 + 100) / 1000;	
+		float degrees =  (float) (rand() %  100 + 1000) / 1000;	
 		
+		//50% chance the sign of the variable will be switched to negative
 		if (sign_x >= 50) {
 			
 			vx = -vx;
@@ -36,14 +36,14 @@ void init_asteroids() {
 			degrees = -degrees;
 		}
 		
+		//50% chance the sign of the variable will be switched to negative
 		if (sign_y >= 50) {
 			
 			vy = -vy;
 			ly = -ly;
 		}
 
-		printf("\nlx = %d ly = %d rotation = %f\n", lx, ly, degrees);
-
+		asteroids[i].hit_radius = 30;
 		asteroids[i].rotation = degrees;
 		asteroids[i].location.x = lx;
 		asteroids[i].location.y = ly;
@@ -80,13 +80,13 @@ void init_asteroids() {
 	}
 }
 
-void update_asteroids() {
+void update_asteroids(struct asteroid asteroids[], int size) {
 
 	int i = 0; 
 	int j = 0; 
 	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
 	
-	for (i = 0; i < ASTEROIDS; i++) {
+	for (i = 0; i < size; i++) {
 		
 		//updates each asteroids location based off its velicity vector
 		add_vector(&asteroids[i].location, &asteroids[i].velocity);
@@ -96,17 +96,17 @@ void update_asteroids() {
 		for (j = 0; j < VERTS; j++) {
 				
 			asteroids[i].world_vert[j] = add_vector_new(&asteroids[i].obj_vert[j], &asteroids[i].location);
-			rotate_vector(&asteroids[i].obj_vert[j], asteroids[i].rotation);
 			add_vector(&asteroids[i].world_vert[j], &translation);
+			rotate_vector(&asteroids[i].obj_vert[j], asteroids[i].rotation);
 		}
 	}
 }
 
-void draw_asteroids(uint32_t* pixel_buffer) {
+void draw_asteroids(uint32_t* pixel_buffer, struct asteroid asteroids[], int size) {
 
 	int i = 0;
 
-	for (i = 0; i < ASTEROIDS; i++) {
+	for (i = 0; i < size; i++) {
 	
 		draw_line(pixel_buffer, asteroids[i].world_vert[0].x, asteroids[i].world_vert[0].y, asteroids[i].world_vert[1].x, asteroids[i].world_vert[1].y, 0xffffffff);
 		draw_line(pixel_buffer, asteroids[i].world_vert[1].x, asteroids[i].world_vert[1].y, asteroids[i].world_vert[2].x, asteroids[i].world_vert[2].y, 0xffffffff);
@@ -129,11 +129,11 @@ void draw_asteroids(uint32_t* pixel_buffer) {
 }
 
 
-void bounds_asteroids() {
+void bounds_asteroids(struct asteroid asteroids[], int size) {
 
 	int i = 0;
 
-	for (i = 0 ; i < ASTEROIDS; i++) {
+	for (i = 0 ; i < size; i++) {
 		
 		if (asteroids[i].location.x < -SCREEN_WIDTH / 2) {
 			
@@ -156,3 +156,17 @@ void bounds_asteroids() {
 		}
 	}
 }
+/*
+int collision_asteroids(struct vector2d* v, float radius) {
+
+	float sum = radius + asteroids[0].hit_radius;
+
+	
+	float a = pow(asteroids[0].location.x - v->x, 2);
+
+	printf("a = %f\n", a);
+	
+	return 0;
+}
+*/
+
