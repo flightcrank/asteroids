@@ -91,7 +91,24 @@ int main (int argc, char* args[]) {
 		update_asteroids(asteroids, ASTEROIDS);
 		bounds_player(&p);
 		bounds_asteroids(asteroids, ASTEROIDS);
+		collision_asteroids(asteroids, ASTEROIDS, &p.location, p.hit_radius);
 		
+		int i = 0;
+		struct vector2d translation = {-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2};
+
+		for (i = 0; i < BULLETS; i++) {
+			
+			//convert bullet screen space location to world space to compare
+			//with asteroids world space to detect a collision
+			struct vector2d world = add_vector_new(&p.bullets[i].location, &translation);
+			int res = collision_asteroids(asteroids, ASTEROIDS, &world, 1);
+
+			if (res == 1) {
+				
+				p.bullets[i].alive = FALSE; 
+			}
+		}
+
 		//draw buffer to the texture representing the screen
 		SDL_UpdateTexture(screen, NULL, pixels, SCREEN_WIDTH * sizeof (Uint32));
 

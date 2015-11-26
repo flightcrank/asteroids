@@ -43,7 +43,7 @@ void init_asteroids(struct asteroid asteroids[], int size) {
 			ly = -ly;
 		}
 
-		asteroids[i].hit_radius = 30;
+		asteroids[i].hit_radius = 35;
 		asteroids[i].rotation = degrees;
 		asteroids[i].location.x = lx;
 		asteroids[i].location.y = ly;
@@ -119,12 +119,14 @@ void draw_asteroids(uint32_t* pixel_buffer, struct asteroid asteroids[], int siz
 		draw_line(pixel_buffer, asteroids[i].world_vert[8].x, asteroids[i].world_vert[8].y, asteroids[i].world_vert[9].x, asteroids[i].world_vert[9].y, 0xffffffff);
 		draw_line(pixel_buffer, asteroids[i].world_vert[9].x, asteroids[i].world_vert[9].y, asteroids[i].world_vert[0].x, asteroids[i].world_vert[0].y, 0xffffffff);
 
+		/*
 		//draw vert representing ships location
 		struct vector2d cpy = {asteroids[i].location.x, asteroids[i].location.y};
 		struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
 		add_vector(&cpy, &translation);
 
 		draw_pixel(pixel_buffer, cpy.x, cpy.y, 0x00ff00ff);
+		*/
 	}
 }
 
@@ -156,17 +158,25 @@ void bounds_asteroids(struct asteroid asteroids[], int size) {
 		}
 	}
 }
-/*
-int collision_asteroids(struct vector2d* v, float radius) {
 
-	float sum = radius + asteroids[0].hit_radius;
 
-	
-	float a = pow(asteroids[0].location.x - v->x, 2);
+int collision_asteroids(struct asteroid asteroids[], int size, struct vector2d* v, float radius) {
 
-	printf("a = %f\n", a);
-	
+
+	int i = 0;
+
+	for (i = 0; i < size; i++) {
+
+		float sum = asteroids[i].hit_radius + radius;
+		float a = pow(asteroids[i].location.x - v->x, 2);
+		float b = pow(asteroids[i].location.y - v->y, 2);
+		float distance = sqrt(a + b);
+		
+		if (distance < sum) {
+			
+			return 1;
+		}
+	}
+
 	return 0;
 }
-*/
-
