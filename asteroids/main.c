@@ -9,7 +9,7 @@
 #include "player.h"
 #include "asteroids.h"
 
-#define ASTEROIDS 3
+#define ASTEROIDS 12
 
 int init(int width, int height);
 
@@ -97,15 +97,22 @@ int main (int argc, char* args[]) {
 		struct vector2d translation = {-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2};
 
 		for (i = 0; i < BULLETS; i++) {
-			
-			//convert bullet screen space location to world space to compare
-			//with asteroids world space to detect a collision
-			struct vector2d world = add_vector_new(&p.bullets[i].location, &translation);
-			int res = collision_asteroids(asteroids, ASTEROIDS, &world, 1);
-
-			if (res == 1) {
 				
-				p.bullets[i].alive = FALSE; 
+			//only check for collision for bullets that are shown on screen
+			if (p.bullets[i].alive == TRUE) {
+				
+				//convert bullet screen space location to world space to compare
+				//with asteroids world space to detect a collision
+				struct vector2d world = add_vector_new(&p.bullets[i].location, &translation);
+				int index = collision_asteroids(asteroids, ASTEROIDS, &world, 1);
+				
+				//collision occured
+				if (index != -1) {
+					
+					asteroids[index].alive = 0;
+					p.bullets[i].alive = FALSE;
+					spawn_asteroids(asteroids, ASTEROIDS, asteroids[index].location);
+				}
 			}
 		}
 
