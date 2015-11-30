@@ -9,7 +9,8 @@
 #include "player.h"
 #include "asteroids.h"
 
-#define ASTEROIDS 12
+#define ASTEROIDS 27
+#define LIVES 3
 
 int init(int width, int height);
 
@@ -19,6 +20,7 @@ SDL_Texture *screen;				//The texture representing the screen
 uint32_t* pixels = NULL;			//The pixel buffer to draw to
 struct asteroid asteroids[ASTEROIDS];		//The asteroids
 struct player p;				//The player
+struct player lives[LIVES];				//Player lives left
     
 int main (int argc, char* args[]) {
 
@@ -30,6 +32,30 @@ int main (int argc, char* args[]) {
 
 	//set up player in world space
 	init_player(&p);
+
+	int i = 0;
+	int j = 0;
+	int offset = 0;
+	struct vector2d translation = {-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2};
+
+	for (i = 0; i < LIVES; i++) {
+			
+		init_player(&lives[i]);
+	
+		//shrink lives
+		for (j = 0; j < P_VERTS; j++) {
+		
+			divide_vector(&lives[i].obj_vert[j], 2);
+		}
+
+		//convert screen space vector into world space
+		struct vector2d top_left = {20 + offset, 20};
+		add_vector(&top_left, &translation);
+		lives[i].location = top_left;
+		update_player(&lives[i]);
+		offset += 20;
+	}
+
 	init_asteroids(asteroids, ASTEROIDS);
 
 	int sleep = 0;
@@ -86,6 +112,9 @@ int main (int argc, char* args[]) {
 		//draw to the pixel buffer
 		clear_pixels(pixels, 0x00000000);
 		draw_player(pixels, &p);
+		draw_player(pixels, &lives[0]);
+		draw_player(pixels, &lives[1]);
+		draw_player(pixels, &lives[2]);
 		draw_asteroids(pixels, asteroids, ASTEROIDS);
 		update_player(&p);
 		update_asteroids(asteroids, ASTEROIDS);
@@ -111,7 +140,11 @@ int main (int argc, char* args[]) {
 					
 					asteroids[index].alive = 0;
 					p.bullets[i].alive = FALSE;
-					spawn_asteroids(asteroids, ASTEROIDS, asteroids[index].location);
+
+					if (asteroids[index].size != SMALL) {
+						
+						spawn_asteroids(asteroids, ASTEROIDS, asteroids[index].size, asteroids[index].location);
+					}
 				}
 			}
 		}

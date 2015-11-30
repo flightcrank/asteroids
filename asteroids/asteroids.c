@@ -53,7 +53,7 @@ void init_asteroids(struct asteroid asteroids[], int size) {
 			asteroids[i].alive = 0;
 		}
 
-		asteroids[i].generation = 1;
+		asteroids[i].size = LARGE;
 		asteroids[i].hit_radius = 35;
 		asteroids[i].rotation = degrees;
 		asteroids[i].location.x = lx;
@@ -144,36 +144,95 @@ void draw_asteroids(uint32_t* pixel_buffer, struct asteroid asteroids[], int siz
 	}
 }
 
-void spawn_asteroids(struct asteroid a[], int size, struct vector2d v) {
+int shrink_asteroid(struct asteroid* a, int size) {
 
+	a->obj_vert[0].x = .0;
+	a->obj_vert[0].y = .4;
+	a->obj_vert[1].x = .2;
+	a->obj_vert[1].y = .3;
+	a->obj_vert[2].x = .2;
+	a->obj_vert[2].y = .1;
+	a->obj_vert[3].x = .4;
+	a->obj_vert[3].y = .0;
+	a->obj_vert[4].x = .3;
+	a->obj_vert[4].y = -.2;
+	a->obj_vert[5].x = .1;
+	a->obj_vert[5].y = -.2;
+	a->obj_vert[6].x = .0;
+	a->obj_vert[6].y = -.3;
+	a->obj_vert[7].x = -.2;
+	a->obj_vert[7].y = -.2;
+	a->obj_vert[8].x = -.4;
+	a->obj_vert[8].y = 0;
+	a->obj_vert[9].x = -.3;
+	a->obj_vert[9].y = .3;
+	
 	int i = 0;
-	int j = 0;
-	int count = 0;
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < VERTS; i++) {
 		
-		if (a[i].generation == 3) {
+		multiply_vector(&a->obj_vert[i], 88);
+	}
+
+	if (size == LARGE) {
 			
-			break;
+		//shrink asteroid
+		for (i = 0; i < VERTS; i++) {
+		
+			divide_vector(&a->obj_vert[i], 2);
+		}
+		
+		a->size = MEDIUM;
+		
+		return 0;
+	}
+	
+	if (size == MEDIUM) {
+		
+		//shrink asteroid
+		for (i = 0; i < VERTS; i++) {
+		
+			divide_vector(&a->obj_vert[i], 4);
+		}
+		
+		a->size = SMALL;
+		
+		return 0;
+	}
+	
+	if (size == SMALL) {
+		
+		//shrink asteroid
+		for (i = 0; i < VERTS; i++) {
+		
+			divide_vector(&a->obj_vert[i], 8);
 		}
 
+		return 0;
+	}
+
+	return 1;
+}
+
+void spawn_asteroids(struct asteroid a[], int length, int size, struct vector2d v) {
+
+	int i = 0;
+	int count = 0;
+
+	for (i = 0; i < length; i++) {
+
 		if(a[i].alive == 0) {
-
-			count++;
-			a[i].generation++;
-			a[i].hit_radius /= 2;
-			a[i].location = v;
-			a[i].alive = 1;
-
-			for (j = 0; j < VERTS; j++) {
-				
-				divide_vector(&a[i].obj_vert[j], 2);
-			}
-
-			if(count == 3) {
+		
+			if (count == 3) {
 				
 				break;
 			}
+
+			a[i].location = v;
+			a[i].hit_radius /= 2;
+			a[i].alive = 1;
+			count++;		
+			shrink_asteroid(&a[i], size);
 		}
 	}
 }

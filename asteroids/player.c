@@ -11,6 +11,7 @@ void init_player(struct player* p) {
 	struct vector2d translation = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2};
 	
 	p->hit_radius = 15;
+	p->lives = 3;
 	p->location.x = 0;
 	p->location.y = 0;
 	p->velocity.x = 0;
@@ -65,6 +66,17 @@ void shoot_bullet(struct player* p) {
 			break;
 		}
 	}
+}
+
+void draw_lives(uint32_t* pixel_buffer, struct player* p) {
+	
+	int i = 0;
+
+	for (i = 0; i < p->lives; i++) {
+
+		draw_player(pixel_buffer, p);
+	}
+
 }
 
 void draw_player(uint32_t* pixel_buffer, struct player* p) {
