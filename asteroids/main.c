@@ -103,8 +103,12 @@ int main (int argc, char* args[]) {
 					switch( event.key.keysym.sym ) {
 					
 						case SDLK_SPACE:
-						
-							shoot_bullet(&p);
+							
+							if (p.lives > 0) {
+								
+								shoot_bullet(&p);
+							}
+
 							break; 
 					}
 			}
