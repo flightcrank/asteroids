@@ -122,7 +122,6 @@ int main (int argc, char* args[]) {
 		draw_player(pixels, &lives[2]);
 		draw_asteroids(pixels, asteroids, ASTEROIDS);
 		update_player(&p);
-		update_asteroids(asteroids, ASTEROIDS);
 		bounds_player(&p);
 		bounds_asteroids(asteroids, ASTEROIDS);
 
@@ -174,6 +173,8 @@ int main (int argc, char* args[]) {
 				}
 			}
 		}
+		
+		update_asteroids(asteroids, ASTEROIDS);
 
 		//draw buffer to the texture representing the screen
 		SDL_UpdateTexture(screen, NULL, pixels, SCREEN_WIDTH * sizeof (Uint32));
