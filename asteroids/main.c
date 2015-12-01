@@ -20,7 +20,7 @@ SDL_Texture *screen;				//The texture representing the screen
 uint32_t* pixels = NULL;			//The pixel buffer to draw to
 struct asteroid asteroids[ASTEROIDS];		//The asteroids
 struct player p;				//The player
-struct player lives[LIVES];				//Player lives left
+struct player lives[LIVES];			//Player lives left
     
 int main (int argc, char* args[]) {
 
@@ -30,18 +30,17 @@ int main (int argc, char* args[]) {
 		return 0;
 	}
 
-	//set up player in world space
-	init_player(&p);
-
 	int i = 0;
 	int j = 0;
 	int offset = 0;
 	struct vector2d translation = {-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2};
 
+	//set up icons used to represent player lives
 	for (i = 0; i < LIVES; i++) {
 			
 		init_player(&lives[i]);
-	
+		lives[i].lives = 1;
+
 		//shrink lives
 		for (j = 0; j < P_VERTS; j++) {
 		
@@ -56,6 +55,8 @@ int main (int argc, char* args[]) {
 		offset += 20;
 	}
 
+	//set up player and asteroids in world space
+	init_player(&p);
 	init_asteroids(asteroids, ASTEROIDS);
 
 	int sleep = 0;
@@ -120,7 +121,28 @@ int main (int argc, char* args[]) {
 		update_asteroids(asteroids, ASTEROIDS);
 		bounds_player(&p);
 		bounds_asteroids(asteroids, ASTEROIDS);
-		collision_asteroids(asteroids, ASTEROIDS, &p.location, p.hit_radius);
+
+		int res = collision_asteroids(asteroids, ASTEROIDS, &p.location, p.hit_radius);
+
+		if (res != -1) {
+			
+			p.lives--;
+			p.location.x = 0;
+			p.location.y = 0;
+			p.velocity.x = 0;
+			p.velocity.y = 0;
+
+			int i = LIVES - 1;
+
+			for ( i = LIVES; i >= 0; i--) {
+				
+				if(lives[i].lives > 0) {
+					
+					lives[i].lives = 0;
+					break;
+				}
+			}
+		}
 		
 		int i = 0;
 		struct vector2d translation = {-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2};

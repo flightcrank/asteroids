@@ -68,24 +68,16 @@ void shoot_bullet(struct player* p) {
 	}
 }
 
-void draw_lives(uint32_t* pixel_buffer, struct player* p) {
-	
-	int i = 0;
-
-	for (i = 0; i < p->lives; i++) {
-
-		draw_player(pixel_buffer, p);
-	}
-
-}
-
 void draw_player(uint32_t* pixel_buffer, struct player* p) {
 	
 	int i = 0;
-
-	draw_line(pixel_buffer, p->world_vert[0].x, p->world_vert[0].y, p->world_vert[1].x, p->world_vert[1].y, 0xffffffff);
-	draw_line(pixel_buffer, p->world_vert[1].x, p->world_vert[1].y, p->world_vert[2].x, p->world_vert[2].y, 0xffffffff);
-	draw_line(pixel_buffer, p->world_vert[2].x, p->world_vert[2].y, p->world_vert[0].x, p->world_vert[0].y, 0xffffffff);
+	
+	if (p->lives > 0) {
+		
+		draw_line(pixel_buffer, p->world_vert[0].x, p->world_vert[0].y, p->world_vert[1].x, p->world_vert[1].y, 0xffffffff);
+		draw_line(pixel_buffer, p->world_vert[1].x, p->world_vert[1].y, p->world_vert[2].x, p->world_vert[2].y, 0xffffffff);
+		draw_line(pixel_buffer, p->world_vert[2].x, p->world_vert[2].y, p->world_vert[0].x, p->world_vert[0].y, 0xffffffff);
+	}
 
 	/*
 	//draw vers representing the player
