@@ -17,5 +17,7 @@ available to you operating systems PATH environment variable
 * ESC to exit game
 
 ## Images
+![animation](https://i.imgur.com/sV164D6.gif)
+
 ![game play](http://i.imgur.com/vg8nlAO.png)
 
