@@ -7,7 +7,7 @@ programming language, using SDL 2 library to display graphics on the screen.
 To compile you need to have SDL 2 installed on your system and the header files
 available to you operating systems PATH environment variable
 
-`gcc -o app main.c vector.c player.c asteroids.c renderer.c -Wall -g -lm `sdl2-config --cflags --libs``
+    gcc -o app main.c vector.c player.c asteroids.c renderer.c -Wall -g -lm `sdl2-config --cflags --libs`
 
 ## Controls
 * left arrow to rotate left
